@@ -1,0 +1,97 @@
+/* GitHub-style Link Bio - Single-file React component
+
+Tailwind CSS required in project
+
+Drop this component into any React app (Create React App / Vite) and render <GitHubLinkBio />
+
+Customize profile, links and theme objects below
+
+
+Features included:
+
+Avatar, name, short bio
+
+Link cards with optional icons, badges, and descriptions
+
+Copy profile URL button
+
+Share button (uses Web Share API when available)
+
+Simple theming (light/dark toggle)
+
+Mobile-first responsive layout */
+
+
+import React, { useState } from "react";
+
+export default function GitHubLinkBio() { // --- Customize these --- const profile = { name: "Adi Rezky Hasan", handle: "@adirezky", avatar: "https://avatars.githubusercontent.com/u/000000?v=4", // change to your avatar URL short: "Frontend dev • Open source • Coffee addict", location: "Indonesia", repo: "https://github.com/yourusername", website: "https://yourwebsite.com", };
+
+const links = [ { title: "GitHub", href: profile.repo, meta: "repos & projects" }, { title: "Website", href: profile.website, meta: "portfolio" }, { title: "Blog", href: "https://blog.example.com", meta: "articles" }, { title: "Resume", href: "https://example.com/resume.pdf", meta: "download" }, { title: "Telegram", href: "https://t.me/yourhandle", meta: "chat" }, { title: "Contact (Email)", href: "mailto:you@example.com", meta: "email" }, ]; // ------------------------
+
+const [copied, setCopied] = useState(false); const [dark, setDark] = useState(false);
+
+const profileUrl = profile.website || profile.repo || window.location.href;
+
+async function copyProfile() { try { await navigator.clipboard.writeText(profileUrl); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch (e) { console.error("Copy failed", e); } }
+
+function shareProfile() { if (navigator.share) { navigator .share({ title: profile.name, text: profile.short, url: profileUrl }) .catch(() => {}); } else { copyProfile(); alert("Profile URL copied to clipboard — share it anywhere!"); } }
+
+return ( <div className={dark ? "min-h-screen bg-gray-900 text-gray-100" : "min-h-screen bg-gray-50 text-gray-900"}> <div className="max-w-xl mx-auto px-6 pt-12 pb-20"> <div className="flex items-center justify-between mb-6"> <div className="flex items-center gap-4"> <img src={profile.avatar} alt="avatar" className="w-16 h-16 rounded-full ring-2 ring-indigo-500/30" /> <div> <div className="text-xl font-semibold">{profile.name}</div> <div className="text-sm opacity-80">{profile.handle} • {profile.location}</div> </div> </div>
+
+<div className="flex items-center gap-2">
+        <button
+          onClick={() => setDark(!dark)}
+          aria-label="Toggle theme"
+          className="px-3 py-2 rounded-md border hover:opacity-90"
+        >
+          {dark ? "Light" : "Dark"}
+        </button>
+      </div>
+    </div>
+
+    <div className="p-5 rounded-2xl shadow-md bg-white dark:bg-gray-800">
+      <p className="mb-4 text-sm leading-relaxed">{profile.short}</p>
+
+      <div className="grid gap-3">
+        {links.map((l, i) => (
+          <a
+            key={i}
+            href={l.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between gap-3 p-3 rounded-lg border hover:shadow-sm transition"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 flex items-center justify-center rounded-md bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 font-semibold">
+                {l.title.charAt(0)}
+              </div>
+              <div>
+                <div className="font-medium">{l.title}</div>
+                {l.meta && <div className="text-xs opacity-70">{l.meta}</div>}
+              </div>
+            </div>
+            <div className="text-xs opacity-60">Open</div>
+          </a>
+        ))}
+      </div>
+
+      <div className="mt-5 flex gap-2">
+        <button onClick={copyProfile} className="flex-1 px-4 py-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-700">
+          {copied ? "Copied!" : "Copy profile link"}
+        </button>
+        <button onClick={shareProfile} className="px-4 py-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-700">
+          Share
+        </button>
+      </div>
+
+      <div className="mt-4 text-xs opacity-70">You can customize the links and profile data inside the component file.</div>
+    </div>
+
+    <footer className="mt-6 text-center text-xs opacity-70">
+      Built with ❤️ — customize for your GitHub README or personal site
+    </footer>
+  </div>
+</div>
+
+); }
+
